@@ -3,44 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeGuard Pro - Control de Acceso</title>
+    <title>V-Gate Nexus</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="logo-area">
-                <span class="shield-icon">🛡️</span>
-                <h1>SafeGuard Pro</h1>
-            </div>
-            <div class="status-bar">
-                <label>Agente de Guardia:</label>
+            <div class="logo">🛡️</div>
+            <h1>V-GATE NEXUS</h1>
+            <div class="agente-info">
                 <input type="text" id="agente-nombre" value="Carlos Carvallo">
             </div>
         </header>
 
-        <section class="form-section">
-            <h3>📝 Registro de Entrada</h3>
-            <div class="input-group">
-                <input type="text" id="visitante-nombre" placeholder="Nombre y Apellido">
+        <section class="registro-section">
+            <div id="alerta-recurrente" class="hidden"></div>
+            
+            <div class="form-group">
                 <input type="text" id="visitante-cedula" placeholder="Cédula de Identidad">
-                <input type="text" id="visitante-placa" placeholder="Placa del Vehículo (Opcional)">
+                <input type="text" id="visitante-nombre" placeholder="Nombre y Apellido">
+                <input type="text" id="visitante-placa" placeholder="Placa Vehículo (Opcional)">
                 <input type="text" id="visitante-destino" placeholder="Destino (Apto/Oficina)">
                 <input type="text" id="visitante-motivo" placeholder="Motivo (Visita/Servicio)">
-                <button id="btn-registrar" class="btn-primary">REGISTRAR ENTRADA</button>
+                <button id="btn-registrar">REGISTRAR ENTRADA</button>
             </div>
         </section>
 
-        <hr>
+        <section class="control-panel">
+            <div class="tabs">
+                <button id="tab-activos" class="tab-btn active" onclick="cambiarTab('activos')">EN INSTALACIONES</button>
+                <button id="tab-historial" class="tab-btn" onclick="cambiarTab('historial')">HISTORIAL HOY</button>
+            </div>
 
-        <section class="list-section">
-            <h3>📋 Registros de Hoy</h3>
-            <div id="lista-accesos" class="grid-registros">
-                </div>
+            <div id="lista-activos" class="tab-content"></div>
+            <div id="lista-historial" class="tab-content hidden"></div>
         </section>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 </body>
 </html>
