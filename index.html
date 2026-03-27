@@ -9,31 +9,37 @@
 <body>
     <div class="container">
         <header>
-            <h1>🛡️ SafeGuard Pro</h1>
+            <div class="logo-area">
+                <span class="shield-icon">🛡️</span>
+                <h1>SafeGuard Pro</h1>
+            </div>
             <div class="status-bar">
                 <label>Agente de Guardia:</label>
-                <input type="text" id="agente-nombre" placeholder="Nombre del Agente" value="Carlos Carvallo">
+                <input type="text" id="agente-nombre" value="Carlos Carvallo">
             </div>
         </header>
 
         <section class="form-section">
             <h3>📝 Registro de Entrada</h3>
-            <input type="text" id="visitante-nombre" placeholder="Nombre y Apellido">
-            <input type="text" id="visitante-cedula" placeholder="Cédula de Identidad">
-            <input type="text" id="visitante-placa" placeholder="Placa del Vehículo (Opcional)">
-            <input type="text" id="visitante-destino" placeholder="Destino (Apto/Oficina)">
-            <input type="text" id="visitante-motivo" placeholder="Motivo (Visita/Servicio/Entrega)">
-            <button id="btn-registrar" class="btn-primary">REGISTRAR ENTRADA</button>
+            <div class="input-group">
+                <input type="text" id="visitante-nombre" placeholder="Nombre y Apellido">
+                <input type="text" id="visitante-cedula" placeholder="Cédula de Identidad">
+                <input type="text" id="visitante-placa" placeholder="Placa del Vehículo (Opcional)">
+                <input type="text" id="visitante-destino" placeholder="Destino (Apto/Oficina)">
+                <input type="text" id="visitante-motivo" placeholder="Motivo (Visita/Servicio)">
+                <button id="btn-registrar" class="btn-primary">REGISTRAR ENTRADA</button>
+            </div>
         </section>
 
         <hr>
 
         <section class="list-section">
             <h3>📋 Registros de Hoy</h3>
-            <div id="lista-accesos">
+            <div id="lista-accesos" class="grid-registros">
                 </div>
         </section>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 </body>
