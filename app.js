@@ -2,22 +2,52 @@ const SB_URL = 'https://cdnpgptmstzzrmowmoke.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkbnBncHRtc3R6enJtb3dtb2tlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1Nzg2MjYsImV4cCI6MjA5MDE1NDYyNn0.AjCxNqRkBUVlfRVjUJX_DTSJ4IUredKgGUq5py3QQ_4';
 const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-// BUSCAR HISTORIAL AUTOMÁTICO
+// --- 1. INICIO DE SESIÓN ---
+document.getElementById('btn-entrar').onclick = async () => {
+    const email = document.getElementById('login-user').value;
+    const pass = document.getElementById('login-pass').value;
+
+    const { data, error } = await _supabase.auth.signInWithPassword({
+        email: email,
+        password: pass,
+    });
+
+    if (error) {
+        alert("Acceso denegado: Datos incorrectos");
+    } else {
+        verificarSesion();
+    }
+};
+
+async function verificarSesion() {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (session) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app-content').classList.remove('hidden');
+        cargarDatos();
+    }
+}
+
+function cerrarSesion() {
+    _supabase.auth.signOut();
+    location.reload();
+}
+
+// --- 2. REGISTRO Y BÚSQUEDA ---
 document.getElementById('visitante-cedula').addEventListener('blur', async (e) => {
     const cedula = e.target.value;
-    const alerta = document.getElementById('alerta-recurrente');
     if (cedula.length > 4) {
         const { data } = await _supabase.from('registros_acceso').select('*').eq('cedula', cedula).order('fecha_hora', { ascending: false }).limit(1);
-        if (data && data.length > 0) {
+        if (data && data[0]) {
             document.getElementById('visitante-nombre').value = data[0].nombre_visitante;
             document.getElementById('visitante-placa').value = data[0].placa_vehiculo || '';
-            alerta.innerHTML = `✅ <b>Recurrente:</b> Estuvo el ${new Date(data[0].fecha_hora).toLocaleDateString()} en ${data[0].destino}`;
+            const alerta = document.getElementById('alerta-recurrente');
+            alerta.innerHTML = `✅ Recurrente: Estuvo en ${data[0].destino}`;
             alerta.classList.remove('hidden');
-        } else { alerta.classList.add('hidden'); }
+        }
     }
 });
 
-// REGISTRAR
 document.getElementById('btn-registrar').onclick = async () => {
     const registro = {
         nombre_visitante: document.getElementById('visitante-nombre').value,
@@ -27,52 +57,56 @@ document.getElementById('btn-registrar').onclick = async () => {
         motivo: document.getElementById('visitante-motivo').value,
         agente_guardia: document.getElementById('agente-nombre').value
     };
-    const { error } = await _supabase.from('registros_acceso').insert([registro]);
-    if (!error) location.reload();
+    await _supabase.from('registros_acceso').insert([registro]);
+    location.reload();
 };
 
-// SALIDA
+// --- 3. REPORTES Y MANTENIMIENTO ---
+document.getElementById('btn-reporte').onclick = async () => {
+    const { data } = await _supabase.from('registros_acceso').select('*').order('fecha_hora', { ascending: true });
+    let reporte = `📊 REPORTE V-GATE NEXUS\n👮 ${document.getElementById('agente-nombre').value}\n\n`;
+    data.forEach((r, i) => {
+        reporte += `${i+1}. ${r.nombre_visitante} - CI: ${r.cedula}\n   📍 ${r.destino} | Ent: ${new Date(r.fecha_hora).toLocaleTimeString()}\n\n`;
+    });
+    navigator.clipboard.writeText(reporte);
+    alert("Copiado al portapapeles");
+};
+
+document.getElementById('btn-mantenimiento').onclick = async () => {
+    const pass = prompt("Clave de mantenimiento:");
+    if (pass === '45Bc*.Ks*9') {
+        if (confirm("¿Borrar todos los registros?")) {
+            await _supabase.from('registros_acceso').delete().neq('id', 0);
+            location.reload();
+        }
+    } else { alert("Clave incorrecta"); }
+};
+
+// --- 4. CARGA DE INTERFAZ ---
 async function marcarSalida(id) {
     await _supabase.from('registros_acceso').update({ fecha_hora_salida: new Date().toISOString() }).eq('id', id);
     location.reload();
 }
 
-// REPORTES
-document.getElementById('btn-reporte').onclick = async () => {
-    const { data } = await _supabase.from('registros_acceso').select('*').order('fecha_hora', { ascending: true });
-    let txt = `📊 REPORTE V-GATE NEXUS\n📅 ${new Date().toLocaleDateString()}\n👮 ${document.getElementById('agente-nombre').value}\n----------\n`;
-    data.forEach((r, i) => {
-        const ent = new Date(r.fecha_hora).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        const sal = r.fecha_hora_salida ? new Date(r.fecha_hora_salida).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "---";
-        txt += `${i+1}. ${r.nombre_visitante} (ID: ${r.cedula})\n📍 Destino: ${r.destino} | ⏰ ${ent} - ${sal}\n\n`;
-    });
-    navigator.clipboard.writeText(txt);
-    alert("📋 Reporte copiado. ¡Pégalo en WhatsApp!");
-};
-
-function cambiarTab(t) {
-    document.getElementById('lista-activos').classList.toggle('hidden', t !== 'activos');
-    document.getElementById('lista-historial').classList.toggle('hidden', t !== 'historial');
-    document.getElementById('tab-activos').classList.toggle('active', t === 'activos');
-    document.getElementById('tab-historial').classList.toggle('active', t === 'historial');
+function cambiarTab(tipo) {
+    document.getElementById('lista-activos').classList.toggle('hidden', tipo !== 'activos');
+    document.getElementById('lista-historial').classList.toggle('hidden', tipo !== 'historial');
 }
 
-async function cargar() {
+async function cargarDatos() {
     const { data } = await _supabase.from('registros_acceso').select('*').order('fecha_hora', { ascending: false });
-    const activos = document.getElementById('lista-activos');
-    const historial = document.getElementById('lista-historial');
-    data.forEach(reg => {
-        const hE = new Date(reg.fecha_hora).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    const lista = document.getElementById('lista-activos');
+    const hist = document.getElementById('lista-historial');
+    data.forEach(r => {
         const card = `
-            <div class="registro-card ${reg.fecha_hora_salida ? 'historial-card' : ''}">
-                <strong>👤 ${reg.nombre_visitante}</strong><br>
-                <small>🆔 ${reg.cedula} | 🚗 ${reg.placa_vehiculo || 'S/P'}</small><br>
-                <span>📍 ${reg.destino}</span><br>
-                <small>⏰ Entrada: ${hE}</small>
-                ${reg.fecha_hora_salida ? `<br><small>✔️ Salida: ${new Date(reg.fecha_hora_salida).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small>` : `<button onclick="marcarSalida(${reg.id})" class="btn-salida">MARCAR SALIDA</button>`}
+            <div class="registro-card">
+                <strong>👤 ${r.nombre_visitante}</strong><br>
+                <span>📍 ${r.destino}</span><br>
+                <small>⏰ ${new Date(r.fecha_hora).toLocaleTimeString()}</small>
+                ${r.fecha_hora_salida ? '' : `<button onclick="marcarSalida(${r.id})" class="btn-salida">SALIDA</button>`}
             </div>`;
-        if (reg.fecha_hora_salida) historial.innerHTML += card;
-        else activos.innerHTML += card;
+        if (r.fecha_hora_salida) hist.innerHTML += card; else lista.innerHTML += card;
     });
 }
-window.onload = cargar;
+
+window.onload = verificarSesion;
