@@ -10,14 +10,29 @@ body {
     background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
     color: white;
     font-family: 'Segoe UI', sans-serif;
-    margin: 0; padding: 15px;
+    margin: 0; padding: 0;
 }
 
+/* --- PANTALLA DE LOGIN --- */
+#login-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #0f172a; display: flex; align-items: center;
+    justify-content: center; z-index: 1000;
+}
+
+.login-card {
+    background: #1e293b; padding: 30px; border-radius: 15px;
+    text-align: center; width: 85%; max-width: 350px;
+    border: 1px solid var(--primary);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+/* --- CONTENEDOR PRINCIPAL --- */
+.container { padding: 15px; max-width: 600px; margin: auto; }
+
 header {
-    text-align: center;
-    border-bottom: 2px solid var(--primary);
-    margin-bottom: 20px;
-    padding-bottom: 10px;
+    text-align: center; border-bottom: 2px solid var(--primary);
+    margin-bottom: 20px; padding-bottom: 10px;
 }
 
 header h1 { color: var(--primary); letter-spacing: 2px; margin: 5px 0; }
@@ -28,9 +43,7 @@ input {
     border-radius: 8px; color: white; box-sizing: border-box;
 }
 
-input:focus { border-color: var(--primary); outline: none; }
-
-#btn-registrar {
+#btn-registrar, #btn-entrar {
     width: 100%; padding: 15px; background: var(--primary);
     border: none; border-radius: 8px; color: white; font-weight: bold;
     cursor: pointer;
@@ -40,13 +53,12 @@ input:focus { border-color: var(--primary); outline: none; }
     width: 100%; padding: 12px; background: transparent;
     border: 2px solid var(--primary); color: var(--primary);
     border-radius: 8px; font-weight: bold; margin-bottom: 15px;
-    cursor: pointer;
 }
 
 .tabs { display: flex; gap: 5px; margin-bottom: 15px; }
 .tab-btn {
     flex: 1; padding: 10px; background: #1e293b;
-    border: none; color: #94a3b8; border-radius: 6px; font-weight: bold;
+    border: none; color: #94a3b8; border-radius: 6px;
 }
 .tab-btn.active { background: var(--primary); color: white; }
 
@@ -56,17 +68,20 @@ input:focus { border-color: var(--primary); outline: none; }
     border-left: 4px solid var(--primary);
 }
 
-.historial-card { border-left-color: #64748b; opacity: 0.8; }
-
 .btn-salida {
     width: 100%; padding: 8px; background: transparent;
     border: 1px solid var(--accent); color: var(--accent);
-    border-radius: 6px; margin-top: 10px; cursor: pointer;
+    border-radius: 6px; margin-top: 10px;
+}
+
+.btn-minimal {
+    background: none; border: none; color: #64748b;
+    font-size: 11px; cursor: pointer; text-decoration: underline;
 }
 
 #alerta-recurrente {
     background: #064e3b; color: #34d399; padding: 10px;
-    border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--accent);
+    border-radius: 8px; margin-bottom: 15px;
 }
 
-.hidden { display: none; }
+.hidden { display: none !important; }
