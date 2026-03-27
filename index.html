@@ -13,7 +13,7 @@
             <div class="logo">🛡️</div>
             <h2>V-GATE NEXUS</h2>
             <p>Identificación de Guardia</p>
-            <input type="text" id="login-user" placeholder="Correo">
+            <input type="email" id="login-user" placeholder="Correo electrónico">
             <input type="password" id="login-pass" placeholder="Contraseña">
             <button id="btn-entrar">INICIAR SESIÓN</button>
         </div>
@@ -21,38 +21,47 @@
 
     <div class="container hidden" id="app-content">
         <header>
-            <div class="logo">🛡️</div>
-            <h1>V-GATE NEXUS</h1>
+            <div class="header-top">
+                <div class="logo">🛡️</div>
+                <h1>V-GATE NEXUS</h1>
+            </div>
             <div class="agente-info">
-                <input type="text" id="agente-nombre" value="Carlos Carvallo">
-                <button onclick="cerrarSesion()" class="btn-minimal">Cerrar</button>
+                <span>Agente: <strong>Carlos Carvallo</strong></span>
+                <button onclick="cerrarSesion()" class="btn-cerrar">🚪 CERRAR SESIÓN</button>
             </div>
         </header>
 
         <section class="registro-section">
-            <div id="alerta-recurrente" class="hidden"></div>
             <div class="form-group">
-                <input type="text" id="visitante-cedula" placeholder="Cédula">
+                <input type="text" id="visitante-cedula" placeholder="Cédula de Identidad">
                 <input type="text" id="visitante-nombre" placeholder="Nombre y Apellido">
-                <input type="text" id="visitante-placa" placeholder="Placa (Opcional)">
+                <input type="text" id="visitante-placa" placeholder="Placa Vehículo (Opcional)">
                 <input type="text" id="visitante-destino" placeholder="Destino (Apto/Oficina)">
-                <input type="text" id="visitante-motivo" placeholder="Motivo">
+                <input type="text" id="visitante-motivo" placeholder="Motivo (Visita/Servicio)">
                 <button id="btn-registrar">REGISTRAR ENTRADA</button>
             </div>
         </section>
 
         <section class="control-panel">
-            <button id="btn-reporte" class="btn-secundario">📋 GENERAR REPORTE DEL DÍA</button>
+            <button id="btn-whatsapp" class="btn-whatsapp">🟢 ENVIAR REPORTE A WHATSAPP</button>
+            
+            <div class="buscar-fecha">
+                <label>📅 Consultar historial por fecha:</label>
+                <input type="date" id="filtro-fecha" onchange="consultarHistorial()">
+            </div>
+
             <div class="tabs">
                 <button id="tab-activos" class="tab-btn active" onclick="cambiarTab('activos')">EN INSTALACIONES</button>
-                <button id="tab-historial" class="tab-btn" onclick="cambiarTab('historial')">HISTORIAL HOY</button>
+                <button id="tab-historial" class="tab-btn" onclick="cambiarTab('historial')">HISTORIAL</button>
             </div>
-            <div id="lista-activos" class="tab-content"></div>
-            <div id="lista-historial" class="tab-content hidden"></div>
-            
-            <button id="btn-mantenimiento" class="btn-minimal" style="margin-top:20px; opacity:0.3;">⚙️ Limpiar registros</button>
+
+            <div id="lista-activos" class="tab-content">
+                </div>
+            <div id="lista-historial" class="tab-content hidden">
+                </div>
         </section>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
