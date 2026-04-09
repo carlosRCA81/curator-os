@@ -2,95 +2,70 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analizador CRCA - Guácharo Activo</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root { --bg: #1a1c2c; --card: #25283d; --text: #e0e1dd; --accent: #4cc9f0; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding: 20px; }
-        .grid-principal { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
-        .panel-control, .panel-analisis { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #3d405b; }
-        .alerta-guacharo { background: linear-gradient(45deg, #f72585, #7209b7); padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 20px; }
-        select, input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; background: #0f111a; color: white; border: 1px solid var(--accent); }
-        .btn-guardar { background: #4cc9f0; color: #0f111a; font-weight: bold; cursor: pointer; border: none; padding: 15px; width: 100%; border-radius: 8px; }
-        .highlight { color: #fee440; font-weight: bold; } /* Para resaltar el 75 */
-    </style>
 </head>
-<body>
+<body onload="verificarAcceso()">
+    <div id="app-container">
+        <header>
+            <h1>🛰️ ANALIZADOR CRCA</h1>
+            <p>Sistema de Inteligencia de Datos - Guácharo Activo</p>
+        </header>
 
-    <div class="alerta-guacharo">🛰️ ANALIZADOR CRCA: SISTEMA DE INTELIGENCIA ACTIVO</div>
-
-    <div class="grid-principal">
-        <div class="panel-control">
-            <h3>📝 Anotación Manual</h3>
-            <label>Fecha del Sorteo:</label>
-            <input type="date" id="fecha" value="2026-04-09">
-            
-            <label>Horario del Sorteo:</label>
-            <select id="hora">
-                <option value="08:00">08:00 a.m.</option>
-                <option value="09:00">09:00 a.m.</option>
-                <option value="10:00">10:00 a.m.</option>
-                <option value="11:00">11:00 a.m.</option>
-                <option value="12:00">12:00 m.</option>
-                <option value="13:00">01:00 p.m.</option>
-                <option value="14:00">02:00 p.m.</option>
-                <option value="15:00">03:00 p.m.</option>
-                <option value="16:00">04:00 p.m.</option>
-                <option value="17:00">05:00 p.m.</option>
-                <option value="18:00">06:00 p.m.</option>
-                <option value="19:00">07:00 p.m.</option>
-            </select>
-
-            <label>Número Ganador:</label>
-            <input type="text" id="num" placeholder="Ej: 75 o 00">
-            
-            <button class="btn-guardar" onclick="guardarDato()">GUARDAR EN CEREBRO</button>
-            <button onclick="borrarUltimo()" style="margin-top:10px; background:none; color:#ef4444; border:none; cursor:pointer;">✖ Borrar error</button>
-        </div>
-
-        <div class="panel-analisis">
-            <h3>📊 Estudio del Algoritmo (Próximas Jugadas)</h3>
-            <div id="graficas" style="min-height: 200px;">
-                <p>Esperando datos para calcular probabilidades...</p>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="panel-control">
-                    <h4>🔥 Más Calientes</h4>
-                    <div id="calientes"></div>
+        <div class="main-grid">
+            <section class="panel registration">
+                <h2>📥 Registro de Datos</h2>
+                <div class="form-group">
+                    <label>Fecha:</label>
+                    <input type="date" id="fecha" value="2026-04-09">
                 </div>
-                <div class="panel-control">
-                    <h4>🎯 Alerta Especial (75)</h4>
-                    <div id="alerta75"></div>
+                <div class="form-group">
+                    <label>Horario (Sorteo):</label>
+                    <select id="hora">
+                        <option value="08:00">08:00 AM</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="13:00">01:00 PM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                        <option value="17:00">05:00 PM</option>
+                        <option value="18:00">06:00 PM</option>
+                        <option value="19:00">07:00 PM</option>
+                    </select>
                 </div>
-            </div>
+                <div class="form-group">
+                    <label>Número Ganador (00-75):</label>
+                    <input type="text" id="num" maxlength="2" placeholder="Ej: 75">
+                </div>
+                <button class="btn-save" onclick="guardarDato()">GUARDAR EN CEREBRO</button>
+                <div id="status-msg"></div>
+            </section>
+
+            <section class="panel analysis">
+                <h2>📊 Algoritmo Predictivo</h2>
+                <div class="stats-container">
+                    <div class="stat-card" id="alert-75">
+                        <h3>🎯 Frecuencia del 75</h3>
+                        <div id="count-75">--</div>
+                        <small>Animal: Guácharo</small>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🔥 Más Probables (Próximos)</h3>
+                        <div id="top-probables">Esperando datos...</div>
+                    </div>
+                </div>
+                <div class="history-table">
+                    <h3>📜 Últimos Movimientos</h3>
+                    <div id="lista-historial"></div>
+                </div>
+            </section>
         </div>
     </div>
-
-    <script>
-        const supabaseUrl = 'https://jvbsalpnycnokynpsexw.supabase.co';
-        const supabaseKey = 'sb_publisible_hurtMxONK9ce5XNemgTYFg_4TzbkkVe';
-        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-        async function guardarDato() {
-            const f = document.getElementById('fecha').value;
-            const h = document.getElementById('hora').value;
-            const n = document.getElementById('num').value;
-
-            const { error } = await _supabase
-                .from('historial_resultados')
-                .insert([{ fecha: f, hora: h, numero: n }]);
-
-            if (error) alert("Error: " + error.message);
-            else {
-                alert("Dato incrustado correctamente");
-                cargarAnalisis();
-            }
-        }
-
-        async function cargarAnalisis() {
-            // Aquí irá mi lógica más profunda para acertar el 70%
-            // Analizando patrones entre horas y elementos
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
