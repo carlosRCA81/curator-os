@@ -2,66 +2,95 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V-Gate Nexus</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Analizador CRCA - Guácharo Activo</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --bg: #1a1c2c; --card: #25283d; --text: #e0e1dd; --accent: #4cc9f0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        .grid-principal { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
+        .panel-control, .panel-analisis { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #3d405b; }
+        .alerta-guacharo { background: linear-gradient(45deg, #f72585, #7209b7); padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 20px; }
+        select, input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; background: #0f111a; color: white; border: 1px solid var(--accent); }
+        .btn-guardar { background: #4cc9f0; color: #0f111a; font-weight: bold; cursor: pointer; border: none; padding: 15px; width: 100%; border-radius: 8px; }
+        .highlight { color: #fee440; font-weight: bold; } /* Para resaltar el 75 */
+    </style>
 </head>
 <body>
-    <div id="login-screen">
-        <div class="login-card">
-            <div class="logo">🛡️</div>
-            <h2>V-GATE NEXUS</h2>
-            <p>Identificación de Guardia</p>
-            <input type="email" id="login-user" placeholder="Correo electrónico">
-            <input type="password" id="login-pass" placeholder="Contraseña">
-            <button id="btn-entrar">INICIAR SESIÓN</button>
+
+    <div class="alerta-guacharo">🛰️ ANALIZADOR CRCA: SISTEMA DE INTELIGENCIA ACTIVO</div>
+
+    <div class="grid-principal">
+        <div class="panel-control">
+            <h3>📝 Anotación Manual</h3>
+            <label>Fecha del Sorteo:</label>
+            <input type="date" id="fecha" value="2026-04-09">
+            
+            <label>Horario del Sorteo:</label>
+            <select id="hora">
+                <option value="08:00">08:00 a.m.</option>
+                <option value="09:00">09:00 a.m.</option>
+                <option value="10:00">10:00 a.m.</option>
+                <option value="11:00">11:00 a.m.</option>
+                <option value="12:00">12:00 m.</option>
+                <option value="13:00">01:00 p.m.</option>
+                <option value="14:00">02:00 p.m.</option>
+                <option value="15:00">03:00 p.m.</option>
+                <option value="16:00">04:00 p.m.</option>
+                <option value="17:00">05:00 p.m.</option>
+                <option value="18:00">06:00 p.m.</option>
+                <option value="19:00">07:00 p.m.</option>
+            </select>
+
+            <label>Número Ganador:</label>
+            <input type="text" id="num" placeholder="Ej: 75 o 00">
+            
+            <button class="btn-guardar" onclick="guardarDato()">GUARDAR EN CEREBRO</button>
+            <button onclick="borrarUltimo()" style="margin-top:10px; background:none; color:#ef4444; border:none; cursor:pointer;">✖ Borrar error</button>
+        </div>
+
+        <div class="panel-analisis">
+            <h3>📊 Estudio del Algoritmo (Próximas Jugadas)</h3>
+            <div id="graficas" style="min-height: 200px;">
+                <p>Esperando datos para calcular probabilidades...</p>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="panel-control">
+                    <h4>🔥 Más Calientes</h4>
+                    <div id="calientes"></div>
+                </div>
+                <div class="panel-control">
+                    <h4>🎯 Alerta Especial (75)</h4>
+                    <div id="alerta75"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="container hidden" id="app-content">
-        <header>
-            <div class="header-top">
-                <div class="logo">🛡️</div>
-                <h1>V-GATE NEXUS</h1>
-            </div>
-            <div class="agente-info">
-                <span>Agente: <strong>Carlos Carvallo</strong></span>
-                <button onclick="cerrarSesion()" class="btn-cerrar">🚪 CERRAR SESIÓN</button>
-            </div>
-        </header>
+    <script>
+        const supabaseUrl = 'https://jvbsalpnycnokynpsexw.supabase.co';
+        const supabaseKey = 'sb_publisible_hurtMxONK9ce5XNemgTYFg_4TzbkkVe';
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        <section class="registro-section">
-            <div class="form-group">
-                <input type="text" id="visitante-cedula" placeholder="Cédula de Identidad">
-                <input type="text" id="visitante-nombre" placeholder="Nombre y Apellido">
-                <input type="text" id="visitante-placa" placeholder="Placa Vehículo (Opcional)">
-                <input type="text" id="visitante-destino" placeholder="Destino (Apto/Oficina)">
-                <input type="text" id="visitante-motivo" placeholder="Motivo (Visita/Servicio)">
-                <button id="btn-registrar">REGISTRAR ENTRADA</button>
-            </div>
-        </section>
+        async function guardarDato() {
+            const f = document.getElementById('fecha').value;
+            const h = document.getElementById('hora').value;
+            const n = document.getElementById('num').value;
 
-        <section class="control-panel">
-            <button id="btn-whatsapp" class="btn-whatsapp">🟢 ENVIAR REPORTE A WHATSAPP</button>
-            
-            <div class="buscar-fecha">
-                <label>📅 Consultar historial por fecha:</label>
-                <input type="date" id="filtro-fecha" onchange="consultarHistorial()">
-            </div>
+            const { error } = await _supabase
+                .from('historial_resultados')
+                .insert([{ fecha: f, hora: h, numero: n }]);
 
-            <div class="tabs">
-                <button id="tab-activos" class="tab-btn active" onclick="cambiarTab('activos')">EN INSTALACIONES</button>
-                <button id="tab-historial" class="tab-btn" onclick="cambiarTab('historial')">HISTORIAL</button>
-            </div>
+            if (error) alert("Error: " + error.message);
+            else {
+                alert("Dato incrustado correctamente");
+                cargarAnalisis();
+            }
+        }
 
-            <div id="lista-activos" class="tab-content">
-                </div>
-            <div id="lista-historial" class="tab-content hidden">
-                </div>
-        </section>
-    </div>
-
-    <script src="app.js"></script>
+        async function cargarAnalisis() {
+            // Aquí irá mi lógica más profunda para acertar el 70%
+            // Analizando patrones entre horas y elementos
+        }
+    </script>
 </body>
 </html>
